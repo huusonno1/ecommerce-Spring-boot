@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private LocalUserDAO localUserDAO;
+    private EncryptionService encryptionService;
 
-    public UserService(LocalUserDAO localUserDAO) {
+    public UserService(LocalUserDAO localUserDAO, EncryptionService encryptionService) {
         this.localUserDAO = localUserDAO;
+        this.encryptionService = encryptionService;
     }
 
     public LocalUser registerUser(RegistationBody registationBody) throws UserAlreadyExistsException {
@@ -27,8 +29,7 @@ public class UserService {
         user.setFirstName(registationBody.getFirstName());
         user.setLastName(registationBody.getLastName());
         user.setUsername(registationBody.getUsername());
-        //Todo: Encrypt passwords!!
-        user.setPassword(registationBody.getPassword());
+        user.setPassword(encryptionService.encryptPassword(registationBody.getPassword()));
 
         return localUserDAO.save(user);
     }
